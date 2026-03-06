@@ -1,13 +1,19 @@
-import "dotenv/config"; // Make sure to load environment variables
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from "prisma/config";
 
 export default defineConfig({
-  schema: 'prisma/schema.prisma',
-  migrations: {
-    path: 'prisma/migrations',
-  },
-  // Remove the 'engine' property entirely
+  schema: "prisma/schema.prisma",
+
   datasource: {
-    url: env("file:./dev.db"), // Define your datasource URL here
+    url: "file:./dev.db",
   },
 });
+
+// import 'dotenv/config';
+// import { defineConfig, env } from 'prisma/config';
+
+// export default defineConfig({
+//   schema: './prisma/schema.prisma',
+//   datasource: {
+//     url: env('DATABASE_URL'),
+//   },
+// });
