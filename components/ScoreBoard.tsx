@@ -1,4 +1,3 @@
-// import { Scores } from "@/types/quiz";
 
 interface ScoreBoardProps {
   score: number;

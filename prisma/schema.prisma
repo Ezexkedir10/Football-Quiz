@@ -4,17 +4,151 @@ generator client {
 
 datasource db {
   provider = "sqlite"
- 
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  avatar    String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quizResults    QuizResult[]
+  statistics     UserStatistics?
+  achievements   UserAchievement[]
+  leaderboardPosition LeaderboardEntry?
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  color       String?
+  difficulty  String   @default("mixed")
+  createdAt   DateTime @default(now())
+
+  questions   Question[]
+  quizSessions QuizSession[]
 }
 
 model Question {
-  id       Int    @id @default(autoincrement())
-  question String
-  optionA  String
-  optionB  String
-  optionC  String
-  optionD  String
-  answer   String
+  id         String   @id @default(cuid())
+  question   String
+  optionA    String
+  optionB    String
+  optionC    String
+  optionD    String
+  answer     String
+  difficulty String   @default("medium")
+  createdAt  DateTime @default(now())
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  quizAnswers QuizAnswer[]
+}
+
+model QuizSession {
+  id        String   @id @default(cuid())
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  status    String   @default("in-progress")
+
+  userId     String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  answers     QuizAnswer[]
+  quizResult  QuizResult?
+}
+
+model QuizAnswer {
+  id        String   @id @default(cuid())
+  selectedAnswer String
+  isCorrect Boolean
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  sessionId String
+  session   QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model QuizResult {
+  id              String   @id @default(cuid())
+  score           Int
+  totalQuestions  Int
+  correctAnswers  Int
+  timeSpent       Int
+  accuracy        Float
+  categoryId      String?
+  completedAt     DateTime @default(now())
+
+  userId  String
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  quizSessionId String @unique
+  quizSession   QuizSession @relation(fields: [quizSessionId], references: [id], onDelete: Cascade)
+}
+
+model UserStatistics {
+  id                String   @id @default(cuid())
+  totalQuizzes      Int      @default(0)
+  totalScore        Int      @default(0)
+  averageAccuracy   Float    @default(0)
+  bestScore         Int      @default(0)
+  totalTimeSpent    Int      @default(0)
+  currentStreak     Int      @default(0)
+  longestStreak     Int      @default(0)
+  level             Int      @default(1)
+  experience        Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String
+  criteria    String
+  reward      Int      @default(100)
+  createdAt   DateTime @default(now())
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id          String   @id @default(cuid())
+  unlockedAt  DateTime @default(now())
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}
+
+model LeaderboardEntry {
+  id              String   @id @default(cuid())
+  rank            Int
+  totalPoints     Int      @default(0)
+  totalQuizzes    Int      @default(0)
+  averageScore    Float    @default(0)
+  lastUpdated     DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Score {

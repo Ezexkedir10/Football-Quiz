@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type TimerProps = {
   onTimeUp: () => void;
@@ -7,9 +7,13 @@ export default function Timer({ onTimeUp }: TimerProps)
 {
   const [time, setTime] = useState(15);
 
+  const handleTimeUp = useCallback(() => {
+    onTimeUp();
+  }, [onTimeUp]);
+
   useEffect(() => {
     if (time === 0) {
-      onTimeUp();
+      handleTimeUp();
       return;
     }
 
@@ -18,7 +22,7 @@ export default function Timer({ onTimeUp }: TimerProps)
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [time]);
+  }, [time, handleTimeUp]);
 
   return (
     <div className="text-lg font-bold text-red-500">

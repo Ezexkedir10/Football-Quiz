@@ -1,4 +1,4 @@
--- CreateTable
+
 CREATE TABLE "Question" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "question" TEXT NOT NULL,
@@ -9,7 +9,6 @@ CREATE TABLE "Question" (
     "answer" TEXT NOT NULL
 );
 
--- CreateTable
 CREATE TABLE "Score" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,

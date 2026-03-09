@@ -1,4 +1,4 @@
-import { prisma }  from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -13,11 +13,3 @@ export async function POST(req: Request) {
   return NextResponse.json(score);
 }
 
-export async function GET() {
-  const scores = await prisma.score.findMany({
-    orderBy: { score: "desc" },
-    take: 10
-  });
-
-  return NextResponse.json(scores);
-}
